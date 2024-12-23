@@ -1,20 +1,37 @@
+import json
+from pprint import pprint
+import os
 class GroceryList:
     """A class that represents a grocery list of items"""
-    
+
     def __init__(self):
         """Initialize items dictionary"""
-        self.items = {
-            "dairy": {"milk": "1 gal"},
-            "produce": {"eggs": "1 dozen"}
-            }
+        self.db_path = "database.json"
 
 
     def add_item(self, item, category):
         """Add an item to the grocery list"""
-        if category not in self.items:
-            self.items[category] = {}
+
+        # create database file if the file doesn't exist or is empty 
+        if os.path.getsize(self.db_path) == 0 or not os.path.exists(self.db_path): 
+            with open(self.db_path, "w", encoding="utf-8") as db:
+                data = {category: {item.item_name: item.item_info}}
+                json.dump(data, db, indent=4) 
+                return
+
+        # Load the grocery list into memory   
+        data = self.get_items() 
         
-        self.items[category].update({item.item_name: item.item_info})
+        # Create a dictionary if the category doesn't exist
+        if category not in data: 
+            data[category] = {}
+        
+        data[category][item.item_name] = item.item_info 
+
+        with open(self.db_path, "w", encoding="utf-8") as db:
+            json.dump(data, db, indent=4) 
+        
+        
 
 
     def update_item(self, item, category):
@@ -29,7 +46,9 @@ class GroceryList:
 
     def get_items(self):
         """View all items in the cart"""
-        return self.items 
+        with open("database.json", "r", encoding="utf-8") as db:
+            data = json.load(db)
+            return data
 
 
 class GroceryItem(GroceryList):
@@ -117,7 +136,8 @@ def remove_from_cart(cart):
 
 def view_cart(cart):
     """View all items in the cart"""
-    print(cart.get_items())
+    items = cart.get_items()
+    pprint(items, indent=4)
 
 
 def main():

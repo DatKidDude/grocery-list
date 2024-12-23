@@ -2,3 +2,5 @@ __pycache__/
 GroceryList.drawio
 venv/
 notes.md
+database.json
+test.py
