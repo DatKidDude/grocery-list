@@ -31,17 +31,25 @@ class GroceryList:
         with open(self.db_path, "w", encoding="utf-8") as db:
             json.dump(data, db, indent=4) 
         
-        
-
-
+    
     def update_item(self, item, category):
         """Update an existing item in the grocery list"""
-        self.items[category].update({item.item_name: item.item_info})
+        data = self.get_items()
+
+        data[category][item.item_name] = item.item_info
+
+        with open(self.db_path, "w", encoding="utf-8") as db:
+            json.dump(data, db, indent=4)
 
 
     def remove_item(self, item_name, category):
         """Remove an item from the grocery list"""
-        del self.items[category][item_name]
+        data = self.get_items()
+
+        del data[category][item_name]
+
+        with open(self.db_path, "w", encoding="utf-8") as db:
+            json.dump(data, db, indent=4)
 
 
     def get_items(self):
@@ -113,7 +121,7 @@ def update_to_cart(cart):
             item_info = input("Add a note (optional):\n>>> ")
             grocery_item = GroceryItem(item_name, item_info)
             cart.update_item(grocery_item, category)
-            break
+            return
     
     print(f"{item_name} not in your cart")
 
@@ -122,6 +130,8 @@ def remove_from_cart(cart):
     """Remove an item from the cart"""
     print("\nChoose which item you would like to remove from your cart:")
     cart_items = cart.get_items()
+
+    print(cart_items)
 
     item_name = input(">>> ").strip()
 
